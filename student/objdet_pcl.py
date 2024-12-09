@@ -196,13 +196,16 @@ def bev_from_pcl(lidar_pcl, configs):
     intensity_map[np.int_(lidar_pcl_int[:, 0]), np.int_(lidar_pcl_int[:, 1])] = lidar_pcl_int[:, 3] / (np.amax(lidar_pcl_int[:, 3])-np.amin(lidar_pcl_int[:, 3]))
 
     ## step 5 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
-    img_intensity = intensity_map * 256
-    img_intensity = img_intensity.astype(np.uint8)
-    while (1):
-        cv2.imshow('img_intensity', img_intensity)
-        if cv2.waitKey(10) & 0xFF == 27:
-           break
-    cv2.destroyAllWindows()
+    
+    # commented out for later excercises /// by Adrian
+    
+    #img_intensity = intensity_map * 256
+    #img_intensity = img_intensity.astype(np.uint8)
+    #while (1):
+    #    cv2.imshow('img_intensity', img_intensity)
+    #    if cv2.waitKey(10) & 0xFF == 27:
+    #       break
+    #cv2.destroyAllWindows()
 
     #######
     ####### ID_S2_EX2 END ####### 
@@ -230,13 +233,15 @@ def bev_from_pcl(lidar_pcl, configs):
 
     ## step 3 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
 
-    img_height = height_map * 256
-    img_height = img_height.astype(np.uint8)
-    while (1):
-        cv2.imshow('img_height', img_height)
-        if cv2.waitKey(10) & 0xFF == 27:
-            break
-    cv2.destroyAllWindows()
+    # commented out for later excercises /// by Adrian
+
+    #img_height = height_map * 256
+    #img_height = img_height.astype(np.uint8)
+    #while (1):
+    #    cv2.imshow('img_height', img_height)
+    #    if cv2.waitKey(10) & 0xFF == 27:
+    #        break
+    #cv2.destroyAllWindows()
 
     #######
     ####### ID_S2_EX3 END #######       

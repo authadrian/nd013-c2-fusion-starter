@@ -383,6 +383,7 @@ def show_objects_in_bev_labels_in_camera(detections, bev_maps, image, object_lab
     bev_map = (bev_maps.squeeze().permute(1, 2, 0).numpy() * 255).astype(np.uint8)
     bev_map = cv2.resize(bev_map, (configs.bev_width, configs.bev_height))
     project_detections_into_bev(bev_map, detections, configs)
+    # print("detections in visualization function : " , len(detections))
     bev_map = cv2.rotate(bev_map, cv2.ROTATE_180)
 
     # project ground-truth labels into camera image

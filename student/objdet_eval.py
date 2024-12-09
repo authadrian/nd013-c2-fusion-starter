@@ -38,13 +38,11 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
     true_positives = 0 # no. of correctly detected objects
     center_devs = []
     ious = []
-    valid_sum = 0
-    print("len detections: ", len(detections))
     
     for label, valid in zip(labels, labels_valid):
         matches_lab_det = []
         if valid: # exclude all labels from statistics which are not considered valid
-            valid_sum += 1
+            
             # compute intersection over union (iou) and distance between centers
 
             ####### ID_S4_EX1 START #######     
@@ -52,23 +50,23 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
             print("student task ID_S4_EX1 ")
 
             ## step 1 : extract the four corners of the current label bounding-box
-            bbox = label.box
-            bbox_corners = tools.compute_box_corners(x=bbox.center_x, y=bbox.center_y, w=bbox.width, l=bbox.length, yaw=bbox.heading)
+            label_bbox = label.box
+            label_bbox_corners = tools.compute_box_corners(x=label_bbox.center_x, y=label_bbox.center_y, w=label_bbox.width, l=label_bbox.length, yaw=label_bbox.heading)
 
             ## step 2 : loop over all detected objects
             for detection in detections:
                 ## step 3 : extract the four corners of the current detection
                 id,x,y,z,h,w,l,yaw = detection
                 ## step 4 : computer the center distance between label and detection bounding-box in x, y, and z
-                detection_corners = tools.compute_box_corners(x,y,w,l,yaw)
+                detection_bbox_corners = tools.compute_box_corners(x,y,w,l,yaw)
 
-                dist_x = bbox.center_x - x      # need abs() maybe?
-                dist_y = bbox.center_y - y
-                dist_z = bbox.center_z - z
+                dist_x = label_bbox.center_x - x      # need abs() maybe?
+                dist_y = label_bbox.center_y - y
+                dist_z = label_bbox.center_z - z
 
                 ## step 5 : compute the intersection over union (IOU) between label and detection bounding-box
-                poly_detect = Polygon(detection_corners)
-                poly_label = Polygon(bbox_corners)
+                poly_detect = Polygon(detection_bbox_corners)
+                poly_label = Polygon(label_bbox_corners)
 
                 intersection = poly_label.intersection(poly_detect).area
                 union = poly_label.union(poly_detect).area
@@ -77,7 +75,8 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
 
                 ## step 6 : if IOU exceeds min_iou threshold, store [iou,dist_x, dist_y, dist_z] in matches_lab_det and increase the TP count
                 if iou > min_iou:
-                    matches_lab_det.append([iou,dist_x, dist_y, dist_z])
+                #if iou > 0.5:
+                    matches_lab_det.append([iou, dist_x, dist_y, dist_z])
                     true_positives += 1
 
             #######
@@ -90,6 +89,7 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
             center_devs.append(best_match[1:])
 
 
+
     ####### ID_S4_EX2 START #######     
     #######
     print("student task ID_S4_EX2")
@@ -97,15 +97,18 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
     # compute positives and negatives for precision/recall
     
     ## step 1 : compute the total number of positives present in the scene
-    print("positives summed by method: ", labels_valid.sum())
-    print("all valid labels by loop: ", valid_sum)  
+    #print("positives summed by method: ", labels_valid.sum()) 
     all_positives = labels_valid.sum()
+
+    # print("true positives : ", true_positives)
 
     ## step 2 : compute the number of false negatives
     false_negatives = all_positives - true_positives
-
+    #print("false_negatives : ", false_negatives)
+    
     ## step 3 : compute the number of false positives
     false_positives = len(detections) - true_positives
+    #print("false_positives : ", false_positives)
     
     #######
     ####### ID_S4_EX2 END #######     

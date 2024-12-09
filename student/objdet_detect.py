@@ -235,21 +235,21 @@ def detect_objects(input_bev_maps, model, configs):
     ## step 1 : check whether there are any detections
     if len(detections) == 0:
         print("no valid detections found")
-    else:
-        print("there are ", str(len(detections)) ," detections")
-
+    
         ## step 2 : loop over all detections
     for obj in detections:
         _id, _x, _y, _z, _h, _w, _l, _yaw = obj
 
         ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
-        x = (_y - configs.lim_y[0]) / (configs.lim_y[1] - configs.lim_y[0]) * configs.bev_width
-        y = (_x - configs.lim_x[0]) / (configs.lim_x[1] - configs.lim_x[0]) * configs.bev_height
-        z = _z - configs.lim_z[0]
-        w = _w / (configs.lim_y[1] - configs.lim_y[0]) * configs.bev_width
-        l = _l / (configs.lim_x[1] - configs.lim_x[0]) * configs.bev_height
-        #yaw = -_yaw        
         
+        x = _y / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
+        y = _x / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0]) - (configs.lim_y[1] - configs.lim_y[0])/2.0 
+        w = _w / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0]) 
+        l = _l / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])        
+        z = _z
+        h = _h
+        yaw = -_yaw
+
         ## step 4 : append the current object to the 'objects' array
         if (
                 (x >= configs.lim_x[0])
@@ -260,9 +260,9 @@ def detect_objects(input_bev_maps, model, configs):
                 and (z <= configs.lim_z[1])
             ):
         
-            objects.append([1, x, y, z, _h, w, l, yaw])
+            objects.append([1, x, y, z, h, w, l, yaw])
     #######
     ####### ID_S3_EX2 END #######
-
+    
     return objects    
 
