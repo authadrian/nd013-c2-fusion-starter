@@ -139,12 +139,12 @@ class Trackmanagement:
                     # your code goes here
                     # track.score = track.score * (params.window - 1) / params.window       # mpt good never reaching zero
                     track.score -= 1 / params.window
-                    pass 
+        
 
         # delete old tracks
         for i in unassigned_tracks:
             track = self.track_list[i]   
-            if track.state == "initialized" or track.state == "tentative":                  # do I need initialized here, or ill switch to "tentative" already?
+            if track.state == "initialized" or track.state == "tentative":                  # do I need "initialized" here, or will switch to "tentative" already?
                 if track.score <= params.delete_init_threshold or track.P[0,0] >= params.max_P or track.P[1,1] >= params.max_P:
                     self.delete_track(track)
             if track.state == "confirmed":
@@ -180,16 +180,17 @@ class Trackmanagement:
         # - set track state to 'tentative' or 'confirmed'
         ############
 
-        # - increase track score
-        track.score += 1 / params.window
+        # - increase track score, should not raise over 1 ...
+        if track.score <= (params.window-1 / params.window):
+            track.score += 1 / params.window
 
         # - set track state to 'tentative' or 'confirmed'
-        if track.state == "initialized":
-            track.state = "tentative"
+        
         if track.score >= params.confirmed_threshold:
             track.state = "confirmed"
+        else:
+            track.state = "tentative"
 
-        pass
         
         ############
         # END student code
