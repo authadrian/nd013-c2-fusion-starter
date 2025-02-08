@@ -27,6 +27,8 @@ sigma_p55 = 50 # initial setting for estimation error covariance P entry for vy
 sigma_p66 = 5 # initial setting for estimation error covariance P entry for vz
 weight_dim = 0.1 # sliding average parameter for dimension estimation
 
+delete_init_threshold = 1 / (window * 2)        # added by Adrian, score threshold to delete initialized / tentative tracks
+
 # association parameters (Step 3)
 gating_threshold = 0.995 # percentage of correct measurements that shall lie inside gate
 
