@@ -12,6 +12,7 @@
 
 # imports
 import numpy as np
+import misc.params as params
 
 # add project directory to python path to enable relative imports
 import os
@@ -31,8 +32,16 @@ class Filter:
         # TODO Step 1: implement and return system matrix F
         ############
 
-        return 0
-        
+        dt = params.dt
+        return np.matrix([
+            [1, 0, 0, dt, 0, 0],
+            [0, 1, 0, 0, dt, 0],
+            [0, 0, 1, 0, 0, dt],
+            [0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1]
+        ])
+
         ############
         # END student code
         ############ 
@@ -42,7 +51,19 @@ class Filter:
         # TODO Step 1: implement and return process noise covariance Q
         ############
 
-        return 0
+        q = params.q
+        dt = params.dt
+        q1 = (dt**3) / 3 * q
+        q2 = (dt**2) / 2 * q
+        q3 = dt * q
+        return np.matrix([
+            [q1, 0, 0, q2, 0, 0],
+            [0, q1, 0, 0, q2, 0],
+            [0, 0, q1, 0, 0, q2],
+            [q2, 0, 0, q3, 0, 0],
+            [0, q2, 0, 0, q3, 0],
+            [0, 0, q2, 0, 0, q3]
+        ])
         
         ############
         # END student code
@@ -53,7 +74,16 @@ class Filter:
         # TODO Step 1: predict state x and estimation error covariance P to next timestep, save x and P in track
         ############
 
-        pass
+        F = self.F()
+        x = track.x
+        P = track.P
+        x = F*x                                 # state prediction
+        P = F*P*F.transpose() + self.Q()        # covariance prediction
+        
+        track.set_x(x)
+        track.set_P(P)
+
+        return x, P
         
         ############
         # END student code
@@ -64,17 +94,37 @@ class Filter:
         # TODO Step 1: update state x and covariance P with associated measurement, save x and P in track
         ############
         
+       
+        H = meas.sensor.get_H(track.x)          # when is it non-linear and have to use get_hx() ?
+        S = self.S(track, meas, H)
+        P = track.P
+        x = track.x
+
+        K = P*H.transpose()*np.linalg.inv(S)    # Kalman gain
+        x = x + K*self.gamma(track, meas)       # state update
+        I = np.identity(params.dim_state)
+        P = (I - K*H)* P                        # covariance update
+        
+        track.set_x(x)
+        track.set_P(P)
+
         ############
         # END student code
-        ############ 
-        track.update_attributes(meas)
+        ############
+
+        track.update_attributes(meas) ### this was unreachable, after student code
+         
+        
     
     def gamma(self, track, meas):
         ############
         # TODO Step 1: calculate and return residual gamma
         ############
 
-        return 0
+        H = meas.sensor.get_H(track.x)         # measurement matrix
+        gamma = meas.z - H * track.x           # residual
+
+        return gamma
         
         ############
         # END student code
@@ -84,8 +134,11 @@ class Filter:
         ############
         # TODO Step 1: calculate and return covariance of residual S
         ############
+       
+        # why is H an arg not just called with  meas.sensor.get_hx() ?
+        S = H * track.P * H.transpose() + meas.R        # covariance of residual
 
-        return 0
+        return S
         
         ############
         # END student code
