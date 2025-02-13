@@ -135,21 +135,22 @@ class Trackmanagement:
             track = self.track_list[i]
             # check visibility    
             if meas_list: # if not empty
+                print("measurement in sensor fov: ", meas_list[0].sensor.name,  meas_list[0].sensor.in_fov(track.x))
                 if meas_list[0].sensor.in_fov(track.x):
                     # your code goes here
-                    # track.score = track.score * (params.window - 1) / params.window       # mpt good never reaching zero
-                    track.score -= 1 / params.window
+                    track.score -= 1. / params.window
         
-
         # delete old tracks
-        for i in unassigned_tracks:
-            track = self.track_list[i]   
-            if track.state == "initialized" or track.state == "tentative":                  # do I need "initialized" here, or will switch to "tentative" already?
-                if track.score <= params.delete_init_threshold or track.P[0,0] >= params.max_P or track.P[1,1] >= params.max_P:
-                    self.delete_track(track)
-            if track.state == "confirmed":
-                if track.score <= params.delete_threshold or track.P[0,0] >= params.max_P or track.P[1,1] >= params.max_P:
-                    self.delete_track(track)
+        
+        for track in self.track_list:
+            if (track.state == 'confirmed' and track.score <= params.delete_threshold) \
+                    or (track.state != 'confirmed' and track.P[0, 0] > params.max_P) \
+                    or (track.state != 'confirmed' and track.P[1, 1] > params.max_P) \
+                    or (track.score < params.delete_init_threshold):
+                self.delete_track(track)
+            #elif  track.score < params.delete_init_threshold:
+            #    self.delete_track(track)
+        
         
         ############
         # END student code
@@ -181,8 +182,8 @@ class Trackmanagement:
         ############
 
         # - increase track score, should not raise over 1 ...
-        if track.score <= (params.window-1 / params.window):
-            track.score += 1 / params.window
+        if track.score < 1.0 - (1.0 / params.window):
+            track.score += 1.0 / params.window
 
         # - set track state to 'tentative' or 'confirmed'
         
