@@ -55,6 +55,7 @@ class Association:
                 if self.gating(dist, meas.sensor):
                     self.association_matrix[i,j] = dist
 
+        
 
         ############
         # END student code
@@ -70,6 +71,7 @@ class Association:
         ############
 
         # - find minimum entry in association matrix
+        
         A = self.association_matrix
         if np.min(A) == np.inf:
             return np.nan, np.nan 
@@ -89,7 +91,10 @@ class Association:
         
         self.unassigned_tracks.remove(update_track) 
         self.unassigned_meas.remove(update_meas)
-            
+        
+
+        
+
         ############
         # END student code
         ############ 
@@ -99,9 +104,6 @@ class Association:
         ############
         # TODO Step 3: return True if measurement lies inside gate, otherwise False
         ############
-        
-        # I am unsure here, should we keep this 2D or 3D? Separate gates for lidar / cam or shared?
-        # given sensor is an input, I think I should use, it, making dim_z dependent on sensor type
         
         dim_z = sensor.dim_meas                          
         limit = chi2.ppf(params.gating_threshold, df=dim_z)  

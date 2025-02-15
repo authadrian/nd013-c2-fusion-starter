@@ -86,13 +86,14 @@ class Sensor:
             pos_veh[0:3] = x[0:3]
             pos_sens = self.veh_to_sens * pos_veh
 
-            hx = np.zeros(2,1)
+            hx = np.zeros((2,1))
             if x[0] == 0:
                 raise NameError("Jacobian not defined for x[0] = 0!")
             else:
                 hx[0,0] = self.c_i - (self.f_i * pos_sens[1] / pos_sens[0])
                 hx[1,0] = self.c_j - (self.f_j * pos_sens[2] / pos_sens[0])
-                return hx
+            
+            return hx
         
             ############
             # END student code
@@ -183,6 +184,7 @@ class Measurement:
             self.z = np.zeros((sensor.dim_meas,1)) # measurement vector
             self.z[0] = z[0]
             self.z[1] = z[1]
+
 
             self.R = np.matrix([[sigma_cam_i**2, 0], # measurement noise covariance matrix
                                 [0, sigma_cam_j**2]])

@@ -121,8 +121,8 @@ class Filter:
         # TODO Step 1: calculate and return residual gamma
         ############
 
-        H = meas.sensor.get_H(track.x)         # measurement matrix
-        gamma = meas.z - H * track.x           # residual
+        H = meas.sensor.get_hx(track.x)        # measurement matrix
+        gamma = meas.z - H           # residual
 
         return gamma
         
@@ -135,7 +135,6 @@ class Filter:
         # TODO Step 1: calculate and return covariance of residual S
         ############
        
-        # why is H an arg not just called with  meas.sensor.get_hx() ?
         S = H * track.P * H.transpose() + meas.R        # covariance of residual
 
         return S
